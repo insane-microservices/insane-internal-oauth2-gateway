@@ -1,0 +1,27 @@
+server:
+  port: 8089
+eureka:
+  client:
+    service-url:
+      defaultZone : http://insane-service-registry:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak.insane.com:8080/realms/insane-realm
+          jwk-set-uri: http://keycloak.insane.com:8080/realms/insane-realm/protocol/openid-connect/certs
+
+  application:
+    name: insane-internal-oauth2-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: insane-gpt4all-app
+          uri: lb://insane-gpt4all-app
+          predicates:
+            - Path=/gpt4all/**
